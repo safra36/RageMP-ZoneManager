@@ -112,30 +112,6 @@ mp.zones.registerZone = (Vectors, height, zoneName, type) => {
 
 }
 
-// var TestZones = [];
-
-// mp.keys.set(66, 'SavingZone', () => {
-
-//     TestZones.push(new mp.Vector3(ZoneManager_Player.position.x, ZoneManager_Player.position.y, ZoneManager_Player.position.z - 1.5));
-//     mp.gui.chat.push(`Saved ${ZoneManager_Player.position}`);
-
-// });
-
-// mp.keys.set(67, 'CreatingZone', () => {
-
-
-//     mp.zones.drawZoneBy6(TestZones, 6.0);
-//     mp.gui.chat.push(`Zone has been drawn`);
-//     // mp.zones.registerZone(TestZones[0], TestZones[1], -1, -1, -1, 'VerySweetZone!', mp.zones.types["2PointZone"]);
-//     if(mp.zones.registerZone(TestZones, 6.0, 'NewSweet6PointZone', mp.zones.types["6PointZone"]))
-//     {
-//         mp.gui.chat.push(`Zone has been created`);
-//     }
-//     else
-//     {
-//         mp.gui.chat.push(`Error Creating the Zone`);
-//     }
-
 
 
 // });
@@ -223,10 +199,6 @@ mp.zones.drawZoneBy6 = (Vectors, height) => {
         mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[0].x, Vectors[0].y, Vectors[0].z, 255, 0, 0, 255);
 
         //Top
-        // mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
 
         mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
         mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
@@ -948,12 +920,6 @@ mp.events.add('render', () => {
 
             var ZoneHeight = ZoneObject.height;
             var PointVector = ZoneManager_Player.position;
-
-
-            //We need to handle the eazy part which is Z and then we handle the last 2 and we are done!
-            // You suck man! you need to handle every fuckin 3 parts in order to get the best results!
-            //You suck more! you have to check every shape created !
-            // Okay since we find a way to implement the 3d space we use 2d only
 
 
 
