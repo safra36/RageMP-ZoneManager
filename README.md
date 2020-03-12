@@ -73,6 +73,8 @@ mp.zones.registered
 
 On client side the player parameter is mostly the local player it self.
 
+```
+
 /*
     mp.events.add('ZoneManager_PlayerEnterZone', (player, zoneName) => {
         //Your Code
@@ -84,3 +86,5 @@ On client side the player parameter is mostly the local player it self.
 
     })
 */
+
+```
