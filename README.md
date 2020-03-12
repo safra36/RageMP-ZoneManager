@@ -35,6 +35,8 @@ mp.zones.unRegisterZone(zoneName)
 	if you are creating a 4PointZone you need to have an arrayList of vectors with
 	4 Vectors inside and height is used this time, same as 4PointZone in 6PointZone
 	you need to pass 6 vectors and the height.
+	
+	Returns ZoneObject (contains name, type, positions, and zone.data [which never used it my self])
 */
 mp.zones.registerZone(Vectors, height, zoneName, type)
 
