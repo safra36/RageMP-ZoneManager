@@ -1,22 +1,23 @@
 
-
 mp.zones = {};
 mp.zones.registered = [];
 var ZoneManager_Player = mp.players.local;
 
 
+
 mp.zones.types = {
     "2PointZone":1,
     "4PointZone":2,
-    "6PointZone":3
+    "6PointZone":3,
+    "NPointZone":4
 }
 
-mp.zones.isZoneRegistered = (zoneName) => {
+mp.zones.isZoneRegistered = (zoneName, dimension) => {
 
     for(i in mp.zones.registered)
     {
         var ZoneManagerObject = mp.zones.registered[i];
-        if(ZoneManagerObject.zoneName == zoneName)
+        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
         {
             return true;
         }
@@ -25,14 +26,28 @@ mp.zones.isZoneRegistered = (zoneName) => {
     return false;
 }
 
-// Unregister a zone by zonename
-// Returns True On Success False on ZoneName Not Found
-mp.zones.unRegisterZone = (zoneName) => {
+mp.zones.getZoneByName = (zoneName, dimension) => {
 
     for(i in mp.zones.registered)
     {
         var ZoneManagerObject = mp.zones.registered[i];
-        if(ZoneManagerObject.zoneName == zoneName)
+        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
+        {
+            return ZoneManagerObject;
+        }
+    }
+
+    return undefined;
+}
+
+// Unregister a zone by zonename
+// Returns True On Success False on ZoneName Not Found
+mp.zones.unRegisterZone = (zoneName, dimension) => {
+
+    for(i in mp.zones.registered)
+    {
+        var ZoneManagerObject = mp.zones.registered[i];
+        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
         {
             mp.zones.registered.splice(i, 1);
             return true;
@@ -45,13 +60,13 @@ mp.zones.unRegisterZone = (zoneName) => {
 
 // Register a Zone By Name and Type
 // Vector is an array of vectors which is defined and used on type
-mp.zones.registerZone = (Vectors, height, zoneName, type) => {
+mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
 
 
     for(i in mp.zones.registered)
     {
         var ZoneManagerObject = mp.zones.registered[i];
-        if(ZoneManagerObject.zoneName == zoneName)
+        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
         {
             return undefined;
         }
@@ -65,6 +80,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type) => {
         ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["2PointZone"];
+        ZoneObject.dimension = dimension;
         ZoneObject.data = {};
 
         mp.zones.registered.push(ZoneObject);
@@ -81,6 +97,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type) => {
         ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["4PointZone"];
+        ZoneObject.dimension = dimension;
         ZoneObject.data = {};
 
         mp.zones.registered.push(ZoneObject);
@@ -99,10 +116,32 @@ mp.zones.registerZone = (Vectors, height, zoneName, type) => {
         ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["6PointZone"];
+        ZoneObject.dimension = dimension;
         ZoneObject.data = {};
 
         mp.zones.registered.push(ZoneObject);
         return ZoneObject;
+    }
+    else if(type == mp.zones.types["NPointZone"])
+    {
+        if(Vectors.length > 2)
+        {
+            var ZoneObject = {};
+            ZoneObject.vectors = Vectors;
+            ZoneObject.height = height;
+            ZoneObject.collieded = false;
+            ZoneObject.zoneName = zoneName;
+            ZoneObject.type = mp.zones.types["NPointZone"];
+            ZoneObject.dimension = dimension;
+            ZoneObject.data = {};
+
+            mp.zones.registered.push(ZoneObject);
+            return ZoneObject;
+        }
+        else
+        {
+            return undefined;
+        }
     }
     else
     {
@@ -112,15 +151,47 @@ mp.zones.registerZone = (Vectors, height, zoneName, type) => {
 
 }
 
+// var TestZones = [];
+
+// mp.keys.set(66, 'SavingZone', () => {
+
+//     TestZones.push(new mp.Vector3(ZoneManager_Player.position.x, ZoneManager_Player.position.y, ZoneManager_Player.position.z - 1.5));
+//     mp.gui.chat.push(`Saved ${ZoneManager_Player.position}`);
+
+// });
+
+// mp.keys.set(67, 'CreatingZone', () => {
+
+
+//     mp.zones.drawZoneByN(TestZones, 6.0);
+//     mp.gui.chat.push(`Zone has been drawn`);
+//     // mp.zones.registerZone(TestZones[0], TestZones[1], -1, -1, -1, 'VerySweetZone!', mp.zones.types["2PointZone"]);
+//     if(mp.zones.registerZone(TestZones, 6.0, 'NewSweet6PointZone', mp.zones.types["NPointZone"]))
+//     {
+//         mp.gui.chat.push(`Zone has been created`);
+//     }
+//     else
+//     {
+//         mp.gui.chat.push(`Error Creating the Zone`);
+//     }
+
+//     // TestZones.length = 0;
 
 
 // });
 
-/*
-    mp.events.add('ZoneManager_PlayerEnterZone', (player, zoneName) => {})
-    mp.events.add('ZoneManager_PlayerExitZone', (player, zoneName) => {})
 
-*/
+//     mp.events.add('ZoneManager_PlayerEnterZone', (player, zoneName) => {
+
+//         mp.gui.chat.push(`ENTERED ZONE : ${zoneName}`);
+
+//     })
+//     mp.events.add('ZoneManager_PlayerExitZone', (player, zoneName) => {
+
+//         mp.gui.chat.push(`EXITED ZONE : ${zoneName}`);
+//     })
+
+
 
 
 //Must be Edited Like Others
@@ -199,6 +270,10 @@ mp.zones.drawZoneBy6 = (Vectors, height) => {
         mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[0].x, Vectors[0].y, Vectors[0].z, 255, 0, 0, 255);
 
         //Top
+        // mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
+        // mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
+        // mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
+        // mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
 
         mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
         mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
@@ -219,18 +294,112 @@ mp.zones.drawZoneBy6 = (Vectors, height) => {
 }
 
 
-mp.zones.isPointInZone = (point, zoneName) => {
+
+
+
+
+mp.zones.drawZoneByN = (Vectors, height) => {
+
+    //Check if vectors length are more than 2
+    
+    // mp.gui.chat.push(`Vector: ${JSON.stringify(Vectors)}`);
+
+    mp.events.add('render', () => {
+
+        var TotalLengthOfVectors = parseInt(Vectors.length, 10);
+        // mp.gui.chat.push(`Total Length : ${TotalLengthOfVectors}`);
+        for(i in Vectors)
+        {
+            // mp.gui.chat.push(`Rendering ...`);
+            if(i != (TotalLengthOfVectors - 1))
+            {
+                i = parseInt(i, 10);
+                // mp.gui.chat.push(`NOT THE END : ${i} - ${i+1}`);
+                //We still have vectors till the last vector
+                var CurrentVector = Vectors[i];
+                var NextVector = Vectors[i+1];
+
+                var CurrentVectorUp = new mp.Vector3(CurrentVector.x, CurrentVector.y, CurrentVector.z + parseFloat(height));
+                var NextVectorUp = new mp.Vector3(NextVector.x, NextVector.y, NextVector.z + parseFloat(height));
+
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+
+            }
+            else
+            {
+                // mp.gui.chat.push(`THE END : ${i}`);
+                //This is the end ...
+                var CurrentVector = Vectors[i];
+                var NextVector = Vectors[0];
+
+                var CurrentVectorUp = new mp.Vector3(CurrentVector.x, CurrentVector.y, CurrentVector.z + parseFloat(height));
+                var NextVectorUp = new mp.Vector3(NextVector.x, NextVector.y, NextVector.z + parseFloat(height));
+
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+            }
+        }
+
+    })
+}
+
+mp.zones.isPointInZone = (point, zoneName, dimension) => {
 
     for(i in mp.zones.registered)
     {
         var ZoneObject = mp.zones.registered[i];
 
-        if(ZoneObject.zoneName == zoneName)
+        if(ZoneObject.zoneName == zoneName && ZoneObject.dimension == dimension)
         {
             //Got ya
             var ZoneType = ZoneObject.type;
+            if(ZoneType == mp.zones.types["NPointZone"])
+            {
 
-            if(ZoneType == mp.zones.types["6PointZone"])
+                var PointVector = point;
+                var ZoneHeight = ZoneObject.height;
+                var Vectors = ZoneObject.vectors;
+
+                var pointInside = [PointVector.x, PointVector.y];
+                var ShapeCoords = [];
+
+                for(i in Vectors)
+                {
+                    var VectorObject = Vectors[i];
+
+                    var VectorObjectZ = VectorObject.z;
+                    var VectorObjectZ_Height = VectorObject.z + parseFloat(ZoneHeight);
+
+                    if(PointVector.z > VectorObjectZ && PointVector.z < VectorObjectZ_Height)
+                    {
+                        var AddingVec = [VectorObject.x, VectorObject.y];
+                        ShapeCoords.push(AddingVec);
+                        continue;
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                }
+
+                //Okay Z Axis is okay, go for the other shets ...
+                if(this.inside(pointInside, ShapeCoords))
+                {
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+
+            }
+            else if(ZoneType == mp.zones.types["6PointZone"])
             {
                 // mp.gui.chat.push(`DO I EVEN GET CALLED?`);
                 var FirstVector = ZoneObject.firstvec;
@@ -512,7 +681,16 @@ mp.events.add('render', () => {
 
     mp.zones.registered.forEach((ZoneObject) => {
 
-        if(ZoneObject.type ==  mp.zones.types["2PointZone"])
+        if(ZoneManager_Player.dimension != ZoneObject.dimension)
+        {
+            if(ZoneObject.collieded)
+            {
+                mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
+                mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
+                ZoneObject.collieded = false;
+            }
+        }
+        else if(ZoneObject.type ==  mp.zones.types["2PointZone"])
         {
             var FirstVector = ZoneObject.firstvec;
             var SecondVector = ZoneObject.secondvec;
@@ -536,9 +714,9 @@ mp.events.add('render', () => {
                                 {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -548,7 +726,7 @@ mp.events.add('render', () => {
                                     //Z Is Out All Others In
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -562,9 +740,9 @@ mp.events.add('render', () => {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
 
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -575,7 +753,7 @@ mp.events.add('render', () => {
 
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -588,7 +766,7 @@ mp.events.add('render', () => {
                             //Y Is Out
                             if(ZoneObject.collieded)
                             {
-                                mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
                             }
@@ -608,9 +786,9 @@ mp.events.add('render', () => {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
 
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -621,7 +799,7 @@ mp.events.add('render', () => {
 
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -635,9 +813,9 @@ mp.events.add('render', () => {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
 
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -648,7 +826,7 @@ mp.events.add('render', () => {
 
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -661,7 +839,7 @@ mp.events.add('render', () => {
 
                             if(ZoneObject.collieded)
                             {
-                                mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
                             }
@@ -674,7 +852,7 @@ mp.events.add('render', () => {
 
                     if(ZoneObject.collieded)
                     {
-                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
                     }
@@ -698,9 +876,9 @@ mp.events.add('render', () => {
                                 {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -710,7 +888,7 @@ mp.events.add('render', () => {
                                     //Z Is Out All Others In
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -723,9 +901,9 @@ mp.events.add('render', () => {
                                 {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -735,7 +913,7 @@ mp.events.add('render', () => {
                                     //Z Is Out All Others In
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -747,7 +925,7 @@ mp.events.add('render', () => {
                             //Y Is Out
                             if(ZoneObject.collieded)
                             {
-                                mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
                             }
@@ -765,9 +943,9 @@ mp.events.add('render', () => {
                                 {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -777,7 +955,7 @@ mp.events.add('render', () => {
                                     //Z Is Out All Others In
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -790,9 +968,9 @@ mp.events.add('render', () => {
                                 {
                                     //Z Vector Is Between
                                     //All X Y Z Is Between!
-                                    if(!ZoneObject.collieded)
+                                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                                     {
-                                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
                                     }
@@ -802,7 +980,7 @@ mp.events.add('render', () => {
                                     //Z Is Out All Others In
                                     if(ZoneObject.collieded)
                                     {
-                                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
                                     }
@@ -814,7 +992,7 @@ mp.events.add('render', () => {
                             //Y Is Out!
                             if(ZoneObject.collieded)
                             {
-                                mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                                mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
                             }
@@ -827,7 +1005,7 @@ mp.events.add('render', () => {
                     //X Is Out!
                     if(ZoneObject.collieded)
                     {
-                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
                     }
@@ -875,9 +1053,9 @@ mp.events.add('render', () => {
 
                 if(this.inside(pointInside, ShapeCoords))
                 {
-                    if(!ZoneObject.collieded)
+                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                     {
-                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                         ZoneObject.collieded = true;
                     }
@@ -886,7 +1064,7 @@ mp.events.add('render', () => {
                 {
                     if(ZoneObject.collieded)
                     {
-                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
                     }
@@ -900,7 +1078,7 @@ mp.events.add('render', () => {
                 // mp.gui.chat.push(`Z Is Out`);
                 if(ZoneObject.collieded)
                 {
-                    mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                    mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                     ZoneObject.collieded = false;
                 }
@@ -920,6 +1098,12 @@ mp.events.add('render', () => {
 
             var ZoneHeight = ZoneObject.height;
             var PointVector = ZoneManager_Player.position;
+
+
+            //We need to handle the eazy part which is Z and then we handle the last 2 and we are done!
+            // You suck man! you need to handle every fuckin 3 parts in order to get the best results!
+            //You suck more! you have to check every shape created !
+            // Okay since we find a way to implement the 3d space we use 2d only
 
 
 
@@ -959,9 +1143,9 @@ mp.events.add('render', () => {
 
                 if(this.inside(pointInside, ShapeCoords))
                 {
-                    if(!ZoneObject.collieded)
+                    if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
                     {
-                        mp.events.call('ZoneManager_PlayerEnterZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                         ZoneObject.collieded = true;
                     }
@@ -970,7 +1154,7 @@ mp.events.add('render', () => {
                 {
                     if(ZoneObject.collieded)
                     {
-                        mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
                     }
@@ -984,13 +1168,69 @@ mp.events.add('render', () => {
                 // mp.gui.chat.push(`Z Is Out`);
                 if(ZoneObject.collieded)
                 {
-                    mp.events.call('ZoneManager_PlayerExitZone', player, ZoneObject.zoneName);
+                    mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                     ZoneObject.collieded = false;
                 }
             }
 
 
+        }
+        else if(ZoneObject.type == mp.zones.types["NPointZone"])
+        {
+
+            var PointVector = ZoneManager_Player.position;
+            var ZoneHeight = ZoneObject.height;
+            var Vectors = ZoneObject.vectors;
+
+            var pointInside = [PointVector.x, PointVector.y];
+            var ShapeCoords = [];
+
+            for(i in Vectors)
+            {
+                var VectorObject = Vectors[i];
+
+                var VectorObjectZ = VectorObject.z;
+                var VectorObjectZ_Height = VectorObject.z + parseFloat(ZoneHeight);
+
+                if(PointVector.z > VectorObjectZ && PointVector.z < VectorObjectZ_Height)
+                {
+                    var AddingVec = [VectorObject.x, VectorObject.y];
+                    ShapeCoords.push(AddingVec);
+                    continue;
+                }
+                else
+                {
+                    if(ZoneObject.collieded)
+                    {
+                        mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
+                        mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
+                        ZoneObject.collieded = false;
+                    }
+                    return;
+                }
+
+            }
+
+            //Okay Z Axis is okay, go for the other shets ...
+            if(this.inside(pointInside, ShapeCoords))
+            {
+                if(!ZoneObject.collieded && ZoneManager_Player.dimension == ZoneObject.dimension)
+                {
+                    mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
+                    mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
+                    ZoneObject.collieded = true;
+                }
+            }
+            else
+            {
+                if(ZoneObject.collieded)
+                {
+                    mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
+                    mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
+                    ZoneObject.collieded = false;
+                }
+            }
         }
     })
 })
