@@ -148,7 +148,6 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         return undefined;
     }
 
-
 }
 
 // var TestZones = [];
@@ -181,15 +180,15 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
 // });
 
 
-//     mp.events.add('ZoneManager_PlayerEnterZone', (player, zoneName) => {
+// mp.events.add('ZoneManager_PlayerEnterZone', (player, zoneName) => {
 
-//         mp.gui.chat.push(`ENTERED ZONE : ${zoneName}`);
+//     mp.gui.chat.push(`ENTERED ZONE : ${zoneName}`);
 
-//     })
-//     mp.events.add('ZoneManager_PlayerExitZone', (player, zoneName) => {
+// })
+// mp.events.add('ZoneManager_PlayerExitZone', (player, zoneName) => {
 
-//         mp.gui.chat.push(`EXITED ZONE : ${zoneName}`);
-//     })
+//     mp.gui.chat.push(`EXITED ZONE : ${zoneName}`);
+// })
 
 
 
@@ -302,7 +301,7 @@ mp.zones.drawZoneByN = (Vectors, height) => {
 
     //Check if vectors length are more than 2
     
-    // mp.gui.chat.push(`Vector: ${JSON.stringify(Vectors)}`);
+    mp.gui.chat.push(`Vector: ${JSON.stringify(Vectors)}`);
 
     mp.events.add('render', () => {
 
