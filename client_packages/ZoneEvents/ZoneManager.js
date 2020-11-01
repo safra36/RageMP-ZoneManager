@@ -1,4 +1,7 @@
 
+
+
+mp.storage.flush();
 mp.zones = {};
 mp.zones.registered = [];
 var ZoneManager_Player = mp.players.local;
@@ -14,9 +17,10 @@ mp.zones.types = {
 
 mp.zones.isZoneRegistered = (zoneName, dimension) => {
 
-    for(i in mp.zones.registered)
+    var ClonedZoneList = JSON.parse(JSON.stringify(mp.zones.registered))
+    for(i in ClonedZoneList)
     {
-        var ZoneManagerObject = mp.zones.registered[i];
+        var ZoneManagerObject = ClonedZoneList[i];
         if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
         {
             return true;
@@ -38,6 +42,11 @@ mp.zones.getZoneByName = (zoneName, dimension) => {
     }
 
     return undefined;
+}
+
+//Get a zone by it's array index
+mp.zones.getZoneByIndex = (zoneIndex) => {
+    return mp.zones.registered[zoneIndex] || undefined;
 }
 
 // Unregister a zone by zonename
@@ -150,6 +159,8 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
 
 }
 
+
+
 // var TestZones = [];
 
 // mp.keys.set(66, 'SavingZone', () => {
@@ -193,8 +204,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
 
 
 
-//Must be Edited Like Others
-mp.zones.drawZoneBy2 = (startPosition, endPosition) => {
+mp.zones.drawZoneBy2 = (startPosition, endPosition, r=255, g=0, b=0, a=255) => {
 
     var startXVetor = new mp.Vector3(endPosition.x, startPosition.y, startPosition.z);
     var startYVector = new mp.Vector3(startPosition.x, endPosition.y, startPosition.z);
@@ -204,25 +214,25 @@ mp.zones.drawZoneBy2 = (startPosition, endPosition) => {
     var endYVector = new mp.Vector3(endPosition.x, startPosition.y, endPosition.z);
     var endZVector = new mp.Vector3(endPosition.x, endPosition.y, startPosition.z);
 
-    mp.events.add('render', () => {
+    return new mp.Events('render', () => {
 
         //Bottom Or Top
-        mp.game.graphics.drawLine(endZVector.x, endZVector.y, endZVector.z, startXVetor.x, startXVetor.y, startXVetor.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(endZVector.x, endZVector.y, endZVector.z, startYVector.x, startYVector.y, startYVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startYVector.z, startYVector.x, startYVector.y, startYVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startXVetor.z, startXVetor.x, startXVetor.y, startXVetor.z, 255, 0, 0, 255);
+        mp.game.graphics.drawLine(endZVector.x, endZVector.y, endZVector.z, startXVetor.x, startXVetor.y, startXVetor.z, r, g, b, a);
+        mp.game.graphics.drawLine(endZVector.x, endZVector.y, endZVector.z, startYVector.x, startYVector.y, startYVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startYVector.z, startYVector.x, startYVector.y, startYVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startXVetor.z, startXVetor.x, startXVetor.y, startXVetor.z, r, g, b, a);
 
         // Bottom Or Top
-        mp.game.graphics.drawLine(startZVector.x, startZVector.y, startZVector.z, endXVector.x, endXVector.y, endXVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(startZVector.x, startZVector.y, startZVector.z, endYVector.x, endYVector.y, endYVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endXVector.x, endXVector.y, endXVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endYVector.x, endYVector.y, endYVector.z, 255, 0, 0, 255);
+        mp.game.graphics.drawLine(startZVector.x, startZVector.y, startZVector.z, endXVector.x, endXVector.y, endXVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(startZVector.x, startZVector.y, startZVector.z, endYVector.x, endYVector.y, endYVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endXVector.x, endXVector.y, endXVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endYVector.x, endYVector.y, endYVector.z, r, g, b, a);
 
         //Connections
-        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startPosition.z, startZVector.x, startZVector.y, startZVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endZVector.x, endZVector.y, endZVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(endXVector.x, endXVector.y, endXVector.z, startYVector.x, startYVector.y, startYVector.z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(startXVetor.x, startXVetor.y, startXVetor.z, endYVector.x, endYVector.y, endYVector.z, 255, 0, 0, 255);
+        mp.game.graphics.drawLine(startPosition.x, startPosition.y, startPosition.z, startZVector.x, startZVector.y, startZVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(endPosition.x, endPosition.y, endPosition.z, endZVector.x, endZVector.y, endZVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(endXVector.x, endXVector.y, endXVector.z, startYVector.x, startYVector.y, startYVector.z, r, g, b, a);
+        mp.game.graphics.drawLine(startXVetor.x, startXVetor.y, startXVetor.z, endYVector.x, endYVector.y, endYVector.z, r, g, b, a);
 
 
     })
@@ -231,63 +241,57 @@ mp.zones.drawZoneBy2 = (startPosition, endPosition) => {
 }
 
 
-mp.zones.drawZoneBy4 = (Vectors, height) => {
+mp.zones.drawZoneBy4 = (Vectors, height, r=255, g=0, b=0, a=255) => {
 
-    mp.events.add('render', () => {
+    return new mp.Events('render', () => {
 
         // Bottom
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[2].x, Vectors[2].y, Vectors[2].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[3].x, Vectors[3].y, Vectors[3].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[2].x, Vectors[2].y, Vectors[2].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[3].x, Vectors[3].y, Vectors[3].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, r, g, b, a);
 
         //Top
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), r, g, b, a);
 
         //Cennections
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), r, g, b, a);
 
     })
 }
 
-mp.zones.drawZoneBy6 = (Vectors, height) => {
+mp.zones.drawZoneBy6 = (Vectors, height, r=255, g=0, b=0, a=255) => {
 
-    mp.events.add('render', () => {
+    return new mp.Events('render', () => {
 
         // Bottom
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[2].x, Vectors[2].y, Vectors[2].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[3].x, Vectors[3].y, Vectors[3].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[4].x, Vectors[4].y, Vectors[4].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z, Vectors[5].x, Vectors[5].y, Vectors[5].z, 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[0].x, Vectors[0].y, Vectors[0].z, 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[1].x, Vectors[1].y, Vectors[1].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[2].x, Vectors[2].y, Vectors[2].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[3].x, Vectors[3].y, Vectors[3].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[4].x, Vectors[4].y, Vectors[4].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z, Vectors[5].x, Vectors[5].y, Vectors[5].z, r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[0].x, Vectors[0].y, Vectors[0].z, r, g, b, a);
 
-        //Top
-        // mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
-        // mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
-
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), r, g, b, a);
 
         //Cennections
-        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z, Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), 255, 0, 0, 255);
-        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), 255, 0, 0, 255);
+        mp.game.graphics.drawLine(Vectors[0].x, Vectors[0].y, Vectors[0].z, Vectors[0].x, Vectors[0].y, Vectors[0].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[1].x, Vectors[1].y, Vectors[1].z, Vectors[1].x, Vectors[1].y, Vectors[1].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[2].x, Vectors[2].y, Vectors[2].z, Vectors[2].x, Vectors[2].y, Vectors[2].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[3].x, Vectors[3].y, Vectors[3].z, Vectors[3].x, Vectors[3].y, Vectors[3].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[4].x, Vectors[4].y, Vectors[4].z, Vectors[4].x, Vectors[4].y, Vectors[4].z + parseFloat(height), r, g, b, a);
+        mp.game.graphics.drawLine(Vectors[5].x, Vectors[5].y, Vectors[5].z, Vectors[5].x, Vectors[5].y, Vectors[5].z + parseFloat(height), r, g, b, a);
 
     })
 }
@@ -297,23 +301,18 @@ mp.zones.drawZoneBy6 = (Vectors, height) => {
 
 
 
-mp.zones.drawZoneByN = (Vectors, height) => {
+mp.zones.drawZoneByN = (Vectors, height, r=255, g=0, b=0, a=255) => {
 
     //Check if vectors length are more than 2
-    
-    mp.gui.chat.push(`Vector: ${JSON.stringify(Vectors)}`);
 
-    mp.events.add('render', () => {
+    return new mp.Events('render', () => {
 
         var TotalLengthOfVectors = parseInt(Vectors.length, 10);
-        // mp.gui.chat.push(`Total Length : ${TotalLengthOfVectors}`);
         for(i in Vectors)
         {
-            // mp.gui.chat.push(`Rendering ...`);
             if(i != (TotalLengthOfVectors - 1))
             {
                 i = parseInt(i, 10);
-                // mp.gui.chat.push(`NOT THE END : ${i} - ${i+1}`);
                 //We still have vectors till the last vector
                 var CurrentVector = Vectors[i];
                 var NextVector = Vectors[i+1];
@@ -321,15 +320,14 @@ mp.zones.drawZoneByN = (Vectors, height) => {
                 var CurrentVectorUp = new mp.Vector3(CurrentVector.x, CurrentVector.y, CurrentVector.z + parseFloat(height));
                 var NextVectorUp = new mp.Vector3(NextVector.x, NextVector.y, NextVector.z + parseFloat(height));
 
-                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, r, g, b, a);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, r, g, b, a);
+                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, r, g, b, a);
+                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, r, g, b, a);
 
             }
             else
             {
-                // mp.gui.chat.push(`THE END : ${i}`);
                 //This is the end ...
                 var CurrentVector = Vectors[i];
                 var NextVector = Vectors[0];
@@ -337,10 +335,10 @@ mp.zones.drawZoneByN = (Vectors, height) => {
                 var CurrentVectorUp = new mp.Vector3(CurrentVector.x, CurrentVector.y, CurrentVector.z + parseFloat(height));
                 var NextVectorUp = new mp.Vector3(NextVector.x, NextVector.y, NextVector.z + parseFloat(height));
 
-                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
-                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, 255, 0, 0, 255);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, NextVector.x, NextVector.y, NextVector.z, r, g, b, a);
+                mp.game.graphics.drawLine(CurrentVector.x, CurrentVector.y, CurrentVector.z, CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, r, g, b, a);
+                mp.game.graphics.drawLine(NextVector.x, NextVector.y, NextVector.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, r, g, b, a);
+                mp.game.graphics.drawLine(CurrentVectorUp.x, CurrentVectorUp.y, CurrentVectorUp.z, NextVectorUp.x, NextVectorUp.y, NextVectorUp.z, r, g, b, a);
             }
         }
 
@@ -678,7 +676,8 @@ mp.zones.isPointInZone = (point, zoneName, dimension) => {
 
 mp.events.add('render', () => {
 
-    mp.zones.registered.forEach((ZoneObject) => {
+    // mp.zones.registered.forEach((ZoneObject) => {
+    mp.zones.registered.map((ZoneObject, index, ZoneArray) => {
 
         if(ZoneManager_Player.dimension != ZoneObject.dimension)
         {
@@ -687,6 +686,7 @@ mp.events.add('render', () => {
                 mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                 ZoneObject.collieded = false;
+                ZoneArray[index] = ZoneObject;
             }
         }
         else if(ZoneObject.type ==  mp.zones.types["2PointZone"])
@@ -718,6 +718,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -728,6 +729,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
 
@@ -744,6 +746,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -755,6 +758,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                             }
@@ -768,6 +772,7 @@ mp.events.add('render', () => {
                                 mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
+                                ZoneArray[index] = ZoneObject;
                             }
 
                         }
@@ -790,6 +795,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -801,6 +807,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
 
@@ -817,6 +824,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -828,6 +836,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                             }
@@ -841,6 +850,7 @@ mp.events.add('render', () => {
                                 mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
+                                ZoneArray[index] = ZoneObject;
                             }
                         }
                     }
@@ -854,6 +864,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
             }
@@ -880,6 +891,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -890,6 +902,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
 
@@ -905,6 +918,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -915,6 +929,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                             }
@@ -927,6 +942,7 @@ mp.events.add('render', () => {
                                 mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
+                                ZoneArray[index] = ZoneObject;
                             }
                         }
                     }
@@ -947,6 +963,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -957,6 +974,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
 
@@ -972,6 +990,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = true;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                                 else
@@ -982,6 +1001,7 @@ mp.events.add('render', () => {
                                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                         ZoneObject.collieded = false;
+                                        ZoneArray[index] = ZoneObject;
                                     }
                                 }
                             }
@@ -994,6 +1014,7 @@ mp.events.add('render', () => {
                                 mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                                 mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                                 ZoneObject.collieded = false;
+                                ZoneArray[index] = ZoneObject;
                             }
                         }
                     }
@@ -1007,6 +1028,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
             }
@@ -1057,6 +1079,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                         ZoneObject.collieded = true;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
                 else
@@ -1066,6 +1089,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
 
@@ -1080,6 +1104,7 @@ mp.events.add('render', () => {
                     mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                     ZoneObject.collieded = false;
+                    ZoneArray[index] = ZoneObject;
                 }
             }
 
@@ -1147,6 +1172,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                         ZoneObject.collieded = true;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
                 else
@@ -1156,6 +1182,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
+                        ZoneArray[index] = ZoneObject;
                     }
                 }
 
@@ -1170,6 +1197,7 @@ mp.events.add('render', () => {
                     mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                     ZoneObject.collieded = false;
+                    ZoneArray[index] = ZoneObject;
                 }
             }
 
@@ -1205,6 +1233,7 @@ mp.events.add('render', () => {
                         mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                         mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                         ZoneObject.collieded = false;
+                        ZoneArray[index] = ZoneObject;
                     }
                     return;
                 }
@@ -1219,6 +1248,7 @@ mp.events.add('render', () => {
                     mp.events.call('ZoneManager_PlayerEnterZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerEnterZone', ZoneObject.zoneName);
                     ZoneObject.collieded = true;
+                    ZoneArray[index] = ZoneObject;
                 }
             }
             else
@@ -1228,6 +1258,7 @@ mp.events.add('render', () => {
                     mp.events.call('ZoneManager_PlayerExitZone', ZoneManager_Player, ZoneObject.zoneName);
                     mp.events.callRemote('ZoneManager_PlayerExitZone', ZoneObject.zoneName);
                     ZoneObject.collieded = false;
+                    ZoneArray[index] = ZoneObject;
                 }
             }
         }
@@ -1289,3 +1320,170 @@ this.inside = (point, vs) => {
     return inside;
 };
 
+//Not Complete
+this.getAreaOf2DPolygon = (points) => {
+
+
+    var sumX = parseInt(0, 10);
+    var sumY = parseInt(0, 10);
+    
+    for(i in points)
+    {
+    
+        if(i < points.length - 1)
+        {
+            const currentPointX = points[parseInt(i, 10)][0];
+            const nextPointY = points[parseInt(i, 10)+1][1];        
+    
+            const currentPointY = points[i][1];
+            const nextPointX = points[parseInt(i, 10)+1][0]; 
+    
+            sumX += currentPointX * nextPointY;
+            sumY += currentPointY * nextPointX;
+    
+        }
+        else
+        {
+            const currentPointX = points[parseInt(i, 10)][0];
+            const nextPointY = points[0][1];
+    
+            const currentPointY = points[i][1];
+            const nextPointX = points[0][0];
+    
+            sumX += currentPointX * nextPointY;
+            sumY += currentPointY * nextPointX;
+
+    
+        }
+    
+    }
+    
+    return (sumX - sumY)/2;
+}
+
+this.getCenter = (points, area) => {
+
+    var centerX = 1/(6*area);
+    var centerY = 1/(6*area);
+
+    var centerXSum = 0.0;
+    var centerYSum = 0.0;
+
+    for(i in points)
+    {
+        if(i < points.length - 1)
+        {
+            centerXSum += ((points[parseInt(i, 10)][0] + points[parseInt(i, 10)+1][0]) * (points[parseInt(i, 10)][0] * points[parseInt(i, 10)+1][1] - points[parseInt(i, 10)+1][0] * points[parseInt(i, 10)][1]));
+            centerYSum += ((points[parseInt(i, 10)][1] + points[parseInt(i, 10)+1][1]) * (points[parseInt(i, 10)][0] * points[parseInt(i, 10)+1][1] - points[parseInt(i, 10)+1][0] * points[parseInt(i, 10)][1]));
+        }
+        else
+        {
+            centerXSum += ((points[parseInt(i, 10)][0] + points[0][0]) * (points[parseInt(i, 10)][0] * points[0][1] - points[0][0] * points[parseInt(i, 10)][1]));
+            centerYSum += ((points[parseInt(i, 10)][1] + points[0][1]) * (points[parseInt(i, 10)][0] * points[0][1] - points[0][0] * points[parseInt(i, 10)][1]));
+        }
+    }
+
+    console.log(centerX * centerXSum)
+    console.log(centerY * centerYSum)
+
+    console.log(centerYSum)
+    console.log(centerYSum)
+
+
+    var returnObject = {}
+    returnObject.x = centerX * centerXSum;
+    returnObject.y = centerY * centerYSum;
+    returnObject.z = 0.0;
+
+    return returnObject;
+
+}
+
+//Rotate using certain point
+// rotatePointObject = {x:1.0, y:1.0. z:0.0}
+this.rotateByAngle = (points, rotatePointObject, angle) => {
+
+    var rotateMatrix = [[Math.cos(angle), -Math.sin(angle)], [Math.sin(angle), Math.cos(angle)]]
+    var finalPoints = [];
+    
+
+    for(i in points)
+    {
+
+        var fPoints = this.multiplyMatrices(rotateMatrix, [[points[i][0] - rotatePointObject.x], [points[i][1] - rotatePointObject.y]])
+        var arrayToAdd = [parseFloat(fPoints[0][0]) + rotatePointObject.x, parseFloat(fPoints[1][0]) + rotatePointObject.y]
+
+        finalPoints.push(arrayToAdd);
+
+    }
+
+    return finalPoints;
+
+}
+
+//Rotate by center of the shape
+this.centerRotateByAngle = (points, angle) => {
+
+    var rotateMatrix = [[Math.cos(angle), -Math.sin(angle)], [Math.sin(angle), Math.cos(angle)]]
+    var shapeCenteroid = this.getCenter(points, this.getAreaOf2DPolygon(points));
+
+    var finalPoints = [];
+
+    
+
+    for(i in points)
+    {
+
+        var fPoints = this.multiplyMatrices(rotateMatrix, [[points[i][0] - shapeCenteroid.x], [points[i][1] - shapeCenteroid.y]])
+        var arrayToAdd = [parseFloat(fPoints[0][0]) + shapeCenteroid.x, parseFloat(fPoints[1][0]) + shapeCenteroid.y]
+
+        finalPoints.push(arrayToAdd);
+
+    }
+
+    return finalPoints;
+
+}
+
+this.multiplyMatrices = (a, b) => {
+
+    if(Array.isArray(a) && Array.isArray(b))
+    {
+        var x = a.length;
+        var z = a[0].length;
+        var  y = b[0].length;
+
+        // number of columns in the first matrix should be the same as the number of rows in the second
+        if (b.length !== z) 
+        {
+            throw new Error('number of columns in the first matrix should be the same as the number of rows in the second');
+        }
+        else
+        {
+            var productRow = Array.apply(null, new Array(y)).map(Number.prototype.valueOf, 0);
+            var product = new Array(x);
+            for (var p = 0; p < x; p++) {
+                product[p] = productRow.slice();
+            }
+
+            for (var i = 0; i < x; i++) {
+                for (var j = 0; j < y; j++) {
+                    for (var k = 0; k < z; k++) {
+                        product[i][j] += a[i][k] * b[k][j];
+                    }
+                }
+            }
+
+            return product;
+        }
+    }
+    else
+    {
+        throw new Error('Arguments must 2 dimensional arrays.');
+    }
+    
+}
+
+this.dtr = (degree) => {
+  return degree * (Math.PI/180);
+}

@@ -1,4 +1,5 @@
 
+
 mp.zones = {};
 mp.zones.registered = [];
 
@@ -16,7 +17,7 @@ mp.zones.isZoneRegistered = (zoneName, dimension) => {
     for(i in mp.zones.registered)
     {
         var ZoneManagerObject = mp.zones.registered[i];
-        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
+        if(ZoneManagerObject.zoneName === zoneName && ZoneManagerObject.dimension === dimension)
         {
             return true;
         }
@@ -30,13 +31,18 @@ mp.zones.getZoneByName = (zoneName, dimension) => {
     for(i in mp.zones.registered)
     {
         var ZoneManagerObject = mp.zones.registered[i];
-        if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
+        if(ZoneManagerObject.zoneName === zoneName && ZoneManagerObject.dimension === dimension)
         {
             return ZoneManagerObject;
         }
     }
 
     return undefined;
+}
+
+//Get a zone by it's array index
+mp.zones.getZoneByIndex = (zoneIndex) => {
+    return mp.zones.registered[zoneIndex] || undefined;
 }
 
 // Unregister a zone by zonename
@@ -68,7 +74,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         var ZoneManagerObject = mp.zones.registered[i];
         if(ZoneManagerObject.zoneName == zoneName && ZoneManagerObject.dimension == dimension)
         {
-            return undefined;
+            throw new Error(`Cannot create this zone because the name ${zoneName} is already registered!`);
         }
     }
 
@@ -77,7 +83,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         var ZoneObject = {};
         ZoneObject.firstvec = Vectors[0];
         ZoneObject.secondvec = Vectors[1];
-        ZoneObject.collieded = false;
+        // ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["2PointZone"];
         ZoneObject.dimension = dimension;
@@ -95,7 +101,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         ZoneObject.thirdvec = Vectors[2];;
         ZoneObject.forthvec = Vectors[3];;
         ZoneObject.height = height;
-        ZoneObject.collieded = false;
+        // ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["4PointZone"];
         ZoneObject.dimension = dimension;
@@ -115,7 +121,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         ZoneObject.fifthvec = Vectors[4];;
         ZoneObject.sixthvec = Vectors[5];;
         ZoneObject.height = height;
-        ZoneObject.collieded = false;
+        // ZoneObject.collieded = false;
         ZoneObject.zoneName = zoneName;
         ZoneObject.type = mp.zones.types["6PointZone"];
         ZoneObject.dimension = dimension;
@@ -132,7 +138,7 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
             var ZoneObject = {};
             ZoneObject.vectors = Vectors;
             ZoneObject.height = height;
-            ZoneObject.collieded = false;
+            // ZoneObject.collieded = false;
             ZoneObject.zoneName = zoneName;
             ZoneObject.type = mp.zones.types["NPointZone"];
             ZoneObject.dimension = dimension;
@@ -144,12 +150,12 @@ mp.zones.registerZone = (Vectors, height, zoneName, type, dimension) => {
         }
         else
         {
-            return undefined;
+            throw new Error(`Cannot create this zone because this type of zone needs more than 2 zone vectors`);
         }
     }
     else
     {
-        return undefined;
+        throw new Error(`Cannot create this zone because the type of zone is not defined.`);
     }
 
 }
@@ -165,6 +171,7 @@ mp.zones.isPointInZone = (point, zoneName, dimension) => {
         if(ZoneObject.zoneName == zoneName && ZoneObject.dimension == dimension)
         {
             //Got ya
+            console.log(`ZoneName Match + ZoneDimension Match`)
             var ZoneType = ZoneObject.type;
             if(ZoneType == mp.zones.types["NPointZone"])
             {
@@ -467,15 +474,12 @@ mp.zones.isPointInZone = (point, zoneName, dimension) => {
                 }
             }
         }
-        else
-        {
-            return false;
-        }
     }
 
+    console.log(`${zoneName} Was Not Found?`)
+    return false;
+
 }
-
-
 
 
 
@@ -497,29 +501,72 @@ this.inside = (point, vs) => {
 };
 
 
+mp.events.add('playerReady', async (player) => {
 
+    for(i in mp.zones.registered)
+    {
+        const ZoneObject =  mp.zones.registered[i]
+        if(player.syncedZones != undefined)
+        {
+            if(!player.syncedZones.includes(ZoneObject))
+            {
+                player.call('ZoneManager_SyncData', [ZoneObject]);
+                player.syncedZones.push(ZoneObject);
+            }
+        }
+        else
+        {
+            player.call('ZoneManager_SyncData', [ZoneObject]);
+            player.syncedZones = [];
+            player.syncedZones.push(ZoneObject);
+        }
 
+        // Added a delay to eliminate network channel flood and game freeze when a player joins but you can comment this if you don't have issue for 1 or 2 seconds of lag
+        // The lag simply happens when you have too much server-side zones like i do.
+        await timer(50);
+    }
 
-
-
+    player.ZoneManagerIsReady = true;
+})
 
 
 var ZoneManager_Syncer = setInterval(() => {
 
     try
     {
-        mp.players.forEach(player => {
 
-            for(const ZoneObject of mp.zones.registered)
-            {
-                player.call('ZoneManager_SyncData', [ZoneObject]);
-            }
-            
-        });
+        for(i in mp.zones.registered)
+        {
+            const ZoneObject =  mp.zones.registered[i]
+            mp.players.forEach(player => {
+
+                if(player.ZoneManagerIsReady)
+                {
+                    if(player.syncedZones != undefined)
+                    {
+                        if(!player.syncedZones.includes(ZoneObject))
+                        {
+                            player.call('ZoneManager_SyncData', [ZoneObject]);
+                            player.syncedZones.push(ZoneObject);
+                        }                      
+                    }
+                    else
+                    {
+                        player.call('ZoneManager_SyncData', [ZoneObject]);
+                        player.syncedZones = [];
+                        player.syncedZones.push(ZoneObject);
+                    }
+                }
+  
+            });
+        }
+
     }
     catch(e)
     {
         console.log(`[ZoneManager]: Error syncing zone data: ${e}`)
     }
     
-}, 100);
+}, 10000);
+
+const timer = ms => new Promise(res => setTimeout(res, ms))
