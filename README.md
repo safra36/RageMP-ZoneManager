@@ -21,11 +21,13 @@ I was creating a traffic system which needed me to be able to check if a guy ent
 ```js
 /*
 	Check if a zone is registered by it's name and it's dimension
+	@Returns True on success, false on fail
 */
 mp.zones.isZoneRegistered(zoneName, dimension)
 
 /*
 	Unregister a zone by it's name and dimension
+	@Returns True on success, false on fail
 */
 mp.zones.unRegisterZone(zoneName, dimension)
 
@@ -39,7 +41,7 @@ mp.zones.unRegisterZone(zoneName, dimension)
 	4 Vectors inside and height is used this time, same as 4PointZone in 6PointZone
 	you need to pass 6 vectors and the height.
 	
-	Returns ZoneObject (contains name, type, positions, and zone.data [which never used it my self])
+	@Returns ZoneObject (contains name, type, positions, and zone.data [which never used it my self])
 */
 mp.zones.registerZone(Vectors, height, zoneName, type, dimension)
 
