@@ -17,17 +17,20 @@ I was creating a traffic system which needed me to be able to check if a guy ent
 - You can now register zones by any vector pointes above 2
 
 
-## Functions (Client-Side)
+## Functions (Client-Side/Server-Side)
 ```js
 /*
 	Check if a zone is registered by it's name and it's dimension
 	@Returns True on success, false on fail
+	@Shared
 */
+
 mp.zones.isZoneRegistered(zoneName, dimension)
 
 /*
 	Unregister a zone by it's name and dimension
 	@Returns True on success, false on fail
+	@Shared
 */
 mp.zones.unRegisterZone(zoneName, dimension)
 
@@ -41,7 +44,8 @@ mp.zones.unRegisterZone(zoneName, dimension)
 	4 Vectors inside and height is used this time, same as 4PointZone in 6PointZone
 	you need to pass 6 vectors and the height.
 	
-	@Returns ZoneObject (contains name, type, positions, and zone.data [which never used it my self])
+	@Returns ZoneObject (contains name, type, positions, and zone.data)
+	@Shared
 */
 mp.zones.registerZone(Vectors, height, zoneName, type, dimension)
 
@@ -49,6 +53,7 @@ mp.zones.registerZone(Vectors, height, zoneName, type, dimension)
 /*
 	Get ZoneObject by it's name and dimension
 	@Returns ZoneObject
+	@Shared
 */
 mp.zones.getZoneByName(zoneName, dimension)
 
@@ -58,6 +63,7 @@ mp.zones.getZoneByName(zoneName, dimension)
 	Requires 2 vectors
 	Colors are optional default is red
 	@Returns Render Object
+	@Client Only
 */
 mp.zones.drawZoneBy2(startPosition, endPosition, *red, *green, *blue, *alpha)
 
@@ -66,6 +72,7 @@ mp.zones.drawZoneBy2(startPosition, endPosition, *red, *green, *blue, *alpha)
 	Requires 4 vectors and height
 	Colors are optional default is red
 	@Returns Render Object
+	@Client Only
 */
 mp.zones.drawZoneBy4(Vectors, height, *red, *green, *blue, *alpha)
 
@@ -74,6 +81,7 @@ mp.zones.drawZoneBy4(Vectors, height, *red, *green, *blue, *alpha)
 	Requires 6 vectors and height
 	Colors are optional default is red
 	@Returns Render Object
+	@Client Only
 */
 mp.zones.drawZoneBy6(Vectors, height, *red, *green, *blue, *alpha)
 
@@ -83,23 +91,27 @@ mp.zones.drawZoneBy6(Vectors, height, *red, *green, *blue, *alpha)
 	Unlimited number of points supported by this code
 	Colors are optional default is red
 	@Returns Render Object
+	@Client Only
 */
 mp.zones.drawZoneByN(Vectors, height, *red, *green, *blue, *alpha)
 
 /*
 	Check whether a point on the map is inside the zone or not
 	@Returns Bool
+	@Shared
 */
 mp.zones.isPointInZone(point, zoneName, dimension)
 
 /* 
 	Get ZoneObject by ZoneIndex
 	@Returns ZoneObject
+	@Shared
 */
 mp.zones.getZoneByIndex(zoneIndex)
 
 /*
 	This is a list of registered zone names used for looping through zones
+	@Shared
 */
 mp.zones.registered 
 ```
